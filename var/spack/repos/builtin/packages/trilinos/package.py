@@ -66,7 +66,7 @@ class Trilinos(CMakePackage, CudaPackage):
             description='Enable explicit template instantiation (ETI)')
     variant('float', default=False,
             description='Enable single precision (float) numbers in Trilinos')
-    variant('gotype', default='long',
+    variant('gotype', default='long_long',
             values=('int', 'long', 'long_long'),
             multi=False,
             description='global ordinal type for Tpetra')
@@ -82,33 +82,33 @@ class Trilinos(CMakePackage, CudaPackage):
             description='Compile using the default xSDK configuration')
 
     # TPLs (alphabet order)
-    variant('boost',        default=True,
+    variant('boost',        default=False,
             description='Compile with Boost')
     variant('cgns',         default=False,
             description='Enable CGNS')
     variant('adios2',       default=False,
             description='Enable ADIOS2')
-    variant('glm',          default=True,
+    variant('glm',          default=False,
             description='Compile with GLM')
     variant('gtest',        default=True,
             description='Compile with Gtest')
-    variant('hdf5',         default=True,
+    variant('hdf5',         default=False,
             description='Compile with HDF5')
-    variant('hypre',        default=True,
+    variant('hypre',        default=False,
             description='Compile with Hypre preconditioner')
-    variant('matio',        default=True,
+    variant('matio',        default=False,
             description='Compile with Matio')
-    variant('metis',        default=True,
+    variant('metis',        default=False,
             description='Compile with METIS and ParMETIS')
     variant('mpi',          default=True,
             description='Compile with MPI parallelism')
-    variant('mumps',        default=True,
+    variant('mumps',        default=False,
             description='Compile with support for MUMPS solvers')
-    variant('netcdf',       default=True,
+    variant('netcdf',       default=False,
             description='Compile with netcdf')
     variant('pnetcdf',      default=False,
             description='Compile with parallel-netcdf')
-    variant('suite-sparse', default=True,
+    variant('suite-sparse', default=False,
             description='Compile with SuiteSparse solvers')
     variant('superlu-dist', default=False,
             description='Compile with SuperluDist solvers')
@@ -122,15 +122,15 @@ class Trilinos(CMakePackage, CudaPackage):
     # Package options (alphabet order)
     variant('alloptpkgs',   default=False,
             description='Compile with all optional packages')
-    variant('amesos',       default=True,
+    variant('amesos',       default=False,
             description='Compile with Amesos')
-    variant('amesos2',      default=True,
+    variant('amesos2',      default=False,
             description='Compile with Amesos2')
-    variant('anasazi',      default=True,
+    variant('anasazi',      default=False,
             description='Compile with Anasazi')
-    variant('aztec',        default=True,
+    variant('aztec',        default=False,
             description='Compile with Aztec')
-    variant('belos',        default=True,
+    variant('belos',        default=False,
             description='Compile with Belos')
     # chaco is disabled by default. As of 12.14.1 libchaco.so
     # has the global symbol divide (and maybe others) that can
@@ -139,13 +139,13 @@ class Trilinos(CMakePackage, CudaPackage):
             description='Compile with Chaco from SEACAS')
     variant('epetra',       default=True,
             description='Compile with Epetra')
-    variant('epetraext',    default=True,
+    variant('epetraext',    default=False,
             description='Compile with EpetraExt')
-    variant('exodus',       default=True,
+    variant('exodus',       default=False,
             description='Compile with Exodus from SEACAS')
-    variant('ifpack',       default=True,
+    variant('ifpack',       default=False,
             description='Compile with Ifpack')
-    variant('ifpack2',      default=True,
+    variant('ifpack2',      default=False,
             description='Compile with Ifpack2')
     variant('intrepid',     default=False,
             description='Enable Intrepid')
@@ -155,11 +155,11 @@ class Trilinos(CMakePackage, CudaPackage):
             description='Compile with Isorropia')
     variant('kokkos',       default=True,
             description='Compile with Kokkos')
-    variant('ml',           default=True,
+    variant('ml',           default=False,
             description='Compile with ML')
     variant('minitensor',   default=False,
             description='Compile with MiniTensor')
-    variant('muelu',        default=True,
+    variant('muelu',        default=False,
             description='Compile with Muelu')
     variant('nox',          default=False,
             description='Compile with NOX')
@@ -171,7 +171,7 @@ class Trilinos(CMakePackage, CudaPackage):
             description='Compile with ROL')
     variant('rythmos',      default=False,
             description='Compile with Rythmos')
-    variant('sacado',       default=True,
+    variant('sacado',       default=False,
             description='Compile with Sacado')
     variant('stk',          default=False,
             description='Compile with STK')
@@ -189,9 +189,11 @@ class Trilinos(CMakePackage, CudaPackage):
             description='Compile with Teuchos')
     variant('tpetra',       default=True,
             description='Compile with Tpetra')
-    variant('zoltan',       default=True,
+    variant('xpetra',       default=False,
+            description='Compile with Xpetra')
+    variant('zoltan',       default=False,
             description='Compile with Zoltan')
-    variant('zoltan2',      default=True,
+    variant('zoltan2',      default=False,
             description='Compile with Zoltan2')
 
     # External package options
@@ -729,7 +731,8 @@ class Trilinos(CMakePackage, CudaPackage):
             gotype = spec.variants['gotype'].value
             options.extend([
                 define('Tpetra_INST_DOUBLE', True),
-                define('Tpetra_INST_INT_INT', gotype == 'int'),
+                define('Tpetra_INST_INT_INT', gotype == 'int' or
+                    '+epetra' in spec and '+xpetra' in spec),
                 define('Tpetra_INST_INT_LONG', gotype == 'long'),
                 define('Tpetra_INST_INT_LONG_LONG', gotype == 'long_long'),
                 define('Tpetra_INST_COMPLEX_DOUBLE', complex_s),

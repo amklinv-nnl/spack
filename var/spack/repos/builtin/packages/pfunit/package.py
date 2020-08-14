@@ -50,6 +50,9 @@ class Pfunit(CMakePackage):
         for file in glob.glob('*/CMakeLists.txt'):
             filter_file(r'.*/mod($|[^\w].*)', '', file)
 
+        cmake_in = join_path(self.stage.source_path, 'cmake', 'pFUnitConfig.cmake.in')
+        filter_file(r'/mod*', '/include', cmake_in)
+
     def cmake_args(self):
         spec = self.spec
         args = [
